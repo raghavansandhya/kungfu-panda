@@ -1,0 +1,46 @@
+---
+title: "Coconut Price in India in 2014 and 2015"
+output: html_document
+---
+
+Cocunut Price by mont
+
+```{r, echo=FALSE,results='hide',cache=TRUE}
+library(XML)
+library(RCurl)
+url = "https://data.gov.in/sites/default/files/datafile/Coconut_2015.xml"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- xmlParse(xData)
+rootNode <- xmlRoot(doc)
+xmlName(rootNode)
+df <- data.frame(State = xpathSApply(doc,"//Table/State",xmlValue), District = xpathSApply(doc,"//Table/District",xmlValue), Market = xpathSApply(doc,"//Table/Market",xmlValue),
+Arrival_Date = xpathSApply(doc,"//Table/Arrival_Date",xmlValue),Min_x0020_Price = xpathSApply(doc,"//Table/Min_x0020_Price",xmlValue),
+Max_x0020_Price = xpathSApply(doc,"//Table/Max_x0020_Price",xmlValue), Modal_x0020_Price = xpathSApply(doc,"//Table/Modal_x0020_Price",xmlValue))
+
+library(XML)
+library(RCurl)
+url = "https://data.gov.in/sites/default/files/Coconut_2014.xml"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- xmlParse(xData)
+rootNode <- xmlRoot(doc)
+xmlName(rootNode)
+df1 <- data.frame(State = xpathSApply(doc,"//Table/State",xmlValue), District = xpathSApply(doc,"//Table/District",xmlValue), Market = xpathSApply(doc,"//Table/Market",xmlValue),
+Arrival_Date = xpathSApply(doc,"//Table/Arrival_Date",xmlValue),Min_x0020_Price = xpathSApply(doc,"//Table/Min_x0020_Price",xmlValue),
+Max_x0020_Price = xpathSApply(doc,"//Table/Max_x0020_Price",xmlValue), Modal_x0020_Price = xpathSApply(doc,"//Table/Modal_x0020_Price",xmlValue))
+
+df2 <- rbind(df1,df)
+write.csv(df2,file = "coconut.csv", row.names = FALSE)
+library(lubridate)
+df2$Arrival_Date <- as.Date(as.character(df2$Arrival_Date),"%d/%m/%Y")
+df2$Min_x0020_Price <- as.numeric(as.character(df2$Min_x0020_Price))
+df2$Max_x0020_Price <- as.numeric(as.character(df2$Max_x0020_Price))
+df2$Modal_x0020_Price <- as.numeric(as.character(df2$Modal_x0020_Price))
+```
+
+Plot for Andra.
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

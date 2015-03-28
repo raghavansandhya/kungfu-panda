@@ -1,0 +1,54 @@
+library(XML)
+library(RCurl)
+url = "https://data.gov.in/sites/default/files/datafile/Coconut_2015.xml"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- xmlParse(xData)
+rootNode <- xmlRoot(doc)
+xmlName(rootNode)
+df <- data.frame(State = xpathSApply(doc,"//Table/State",xmlValue), District = xpathSApply(doc,"//Table/District",xmlValue), Market = xpathSApply(doc,"//Table/Market",xmlValue),
+Arrival_Date = xpathSApply(doc,"//Table/Arrival_Date",xmlValue),Min_x0020_Price = xpathSApply(doc,"//Table/Min_x0020_Price",xmlValue),
+Max_x0020_Price = xpathSApply(doc,"//Table/Max_x0020_Price",xmlValue), Modal_x0020_Price = xpathSApply(doc,"//Table/Modal_x0020_Price",xmlValue))
+
+library(XML)
+library(RCurl)
+url = "https://data.gov.in/sites/default/files/Coconut_2014.xml"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- xmlParse(xData)
+rootNode <- xmlRoot(doc)
+xmlName(rootNode)
+df1 <- data.frame(State = xpathSApply(doc,"//Table/State",xmlValue), District = xpathSApply(doc,"//Table/District",xmlValue), Market = xpathSApply(doc,"//Table/Market",xmlValue),
+Arrival_Date = xpathSApply(doc,"//Table/Arrival_Date",xmlValue),Min_x0020_Price = xpathSApply(doc,"//Table/Min_x0020_Price",xmlValue),
+Max_x0020_Price = xpathSApply(doc,"//Table/Max_x0020_Price",xmlValue), Modal_x0020_Price = xpathSApply(doc,"//Table/Modal_x0020_Price",xmlValue))
+
+df2 <- rbind(df1,df)
+write.csv(df2,file = "coconut.csv", row.names = FALSE)
+library(lubridate)
+df2$Arrival_Date <- as.Date(as.character(df2$Arrival_Date),"%d/%m/%Y")
+df2$Min_x0020_Price <- as.numeric(as.character(df2$Min_x0020_Price))
+df2$Max_x0020_Price <- as.numeric(as.character(df2$Max_x0020_Price))
+df2$Modal_x0020_Price <- as.numeric(as.character(df2$Modal_x0020_Price))
+sub_df2_2014 <- subset(df2,State == "Tamil Nadu" & year(Arrival_Date) == 2014)
+sub_df2_2014$Month <- month(sub_df2_2014$Arrival_Date)
+sub_df2_2015 <- subset(df2,State == "Tamil Nadu" & year(Arrival_Date) == 2015)
+sub_df2_2015$Month <- month(sub_df2_2015$Arrival_Date)
+tn_data <- ddply(sub_df2_2015,.(District,Month),summarize,avg_modal = mean(Modal_x0020_Price,na.rm=T))
+tn_data1 <- ddply(sub_df2_2014,.(District,Month),summarize,avg_modal = mean(Modal_x0020_Price,na.rm=T))
+total_tn_data <- merge(tn_data,tn_data1,by.x = c("District","Month"), by.y = c("District","Month"),all)
+m_total_tn_data <- melt(total_tn_data,id = c("District","Month"))
+g <- ggplot(m_total_tn_data,aes(District,value,fill=variable))
+g <- ggplot(m_total_tn_data,aes(District,value,fill=variable))
+g <- g + geom_bar(stat ="identity",width = 1) 
+ g <- g +  facet_grid(. ~ Month)
+ g
+
+url = "http://www.business-standard.com/article/markets/rise-in-tender-coconut-demand-hits-copra-stock-115030300742_1.html"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- htmlParse(xData)
+xpathSApply(doc,"//title", xmlValue)
+xpathSApply(doc,"//p[@itemprop='articleBody']", xmlValue)
+
+url = "http://www.thehindubusinessline.com/industry-and-economy/agri-biz/coconut-oil-prices-down-in-kerala-tn/article6438547.ece"
+xData <- getURL(url, ssl.verifypeer = FALSE)
+doc <- htmlParse(xData)
+xpathSApply(doc,"//title", xmlValue)
+xpathSApply(doc,"//p[@class='body']", xmlValue)
