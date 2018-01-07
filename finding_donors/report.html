@@ -13218,7 +13218,7 @@ It is a ratio of true positives(words classified as spam, and which are actually
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
@@ -13235,7 +13235,8 @@ It is a ratio of true positives(words classified as spam, and which are actually
 <span class="n">precision</span> <span class="o">=</span> <span class="n">accuracy</span>
 
 <span class="c1"># TODO: Calculate F-score using the formula above for beta = 0.5 and correct values for precision and recall.</span>
-<span class="n">fscore</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">precision</span><span class="p">)</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span>
+<span class="n">beta_val</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">fscore</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">beta_val</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span><span class="p">)</span><span class="o">/</span><span class="p">(((</span><span class="n">beta_val</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">precision</span><span class="p">)</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span>
 
 <span class="c1"># Print the results </span>
 <span class="k">print</span> <span class="s2">&quot;Naive Predictor: [Accuracy score: {:.4f}, F-score: {:.4f}]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">fscore</span><span class="p">)</span>
@@ -13253,7 +13254,7 @@ It is a ratio of true positives(words classified as spam, and which are actually
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Naive Predictor: [Accuracy score: 0.2478, F-score: 0.3308]
+<pre>Naive Predictor: [Accuracy score: 0.2478, F-score: 0.2917]
 </pre>
 </div>
 </div>
@@ -14329,10 +14330,9 @@ Look at the graph at the bottom left from the cell above(the visualization creat
 <p><strong>Answer: </strong></p>
 <ul>
 <li>We are choosing gradient boosting for our model which is a ensemble algorithm.</li>
-<li>Ensemble algorithms work by collecting a lot of simple rules by learning over a subset of data and then combining them.</li>
-<li>Boosting pick a distribution of hard examples and specifically identifies the weak learners for every iteration and based on the result of the hypothesis gives more weight on the wrong examples to get the next distribution.</li>
-<li>Finally it does a weighted average over all the weak learners to find the best hypothesis.</li>
-<li>With this classification task it is helps because we have many important features and several examples for the learning process. This would mean after  several iterations we would end up with the good hypothesis for prediction.</li>
+<li>Gradient boosting combines several simple prediction models to create an "ensemble" of models. At each iteration it concentrates on the examples that are hard to predict and improves the learning. In the consecutive iteration it adds more weight to the examples that were predicted incorrect and reduces weight on those that were  easy to predict. Finally it takes the average of all the learning rules over several iterations and comes up with a good hypothesis</li>
+<li>In our case, the model is trained with existing census data  (e.g., age, gender, etc), and uses that data to find rules that separate those with income above 50000 and those below. It takes simple rules, eg:  is gender male or female to classify the example to the income bucket. We create multiple decision trees over these simple rules and ensemble them to create a learning model.</li>
+<li>During successive rounds of training, new rules (i.e., decision trees) are learned that essentially create a flowchart of yes/no questions that starts addressing more difficult data examples. At the end of a couple of iteration we end up with an averaged model accross all iterations that give a good prediction model.</li>
 </ul>
 
 </div>
