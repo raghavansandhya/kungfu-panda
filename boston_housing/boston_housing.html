@@ -13305,7 +13305,7 @@ Think about the pros and cons of adding more training points based on if the tra
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong>
-Looking at graph 2 with max_depth = 3, the training curve drops down to about 0.8 and stays there even when the number of training points increases to beyond 350. Similarly the testing curve also reaches a score of 0.8 and stays there at about 300 data points. At this place both the curves converge already at 300 data points and they stay there even when the number of data points increase to 350 and beyond. Since they have already started converging adding more data points to the training set beyond say 400 data points may cause the training curve to overfit and travel upwards to a score of 1.0 and make the testing curve   drop down to lower R2 scores.</p>
+Looking at graph 2 with max_depth = 3, the training curve drops down to about 0.8 and stays there even when the number of training points increases to beyond 350. Similarly the testing curve also reaches a score of 0.8 and stays there at about 300 data points. At this place both the curves converge already at 300 data points and they stay there even when the number of data points increase to 350 and beyond. Since they have already started converging adding more data points to the training set beyond say 400 data points will not give us much gain and will only cost more computing power. But adding more data helps whenever we would like make the estimator generalize and the curves are yet to converge.</p>
 
 </div>
 </div>
@@ -13895,7 +13895,8 @@ Grid Search Techniques is used when looking for the best values to use for the h
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong>
-Cross validation is a method by which limit some sample data as unseen data before we train the model and use this limited sample to test the performance of our model. K-Fold cross validation is an approach in which we split the input data points into k buckets or k folds. Then we loop k times to do the following</p>
+Cross validation is a method by which limit some sample data as unseen data before we train the model and use this limited sample to test the performance of our model. K-Fold cross validation is an approach in which we split the input data points into k buckets or k folds.</p>
+<p>Then we loop k times to do the following</p>
 <ol>
 <li><p>We will keep the Kth group as the test data</p>
 </li>
@@ -13910,6 +13911,8 @@ Cross validation is a method by which limit some sample data as unseen data befo
 <p>In this process choosing K is important so as to keep the bias-variance tradeoff at check. If we choose k=n, n being the size of the input, (usually called leave-one out cross validation) This may tend towards overfitting the model.</p>
 <p>The ideal values of k could be 5 or 10. It is also advisable to choose k such that the data points are evenly split among the sampling subsets.</p>
 <p><a href="https://machinelearningmastery.com/k-fold-cross-validation/">https://machinelearningmastery.com/k-fold-cross-validation/</a> - Following is a very good article on the same.</p>
+<p>In Grid search when evaluvating the estimators kfold validation is one of the parameters we can pass to make sure for each of the different sets of hyper parameters, they are evaluated on the training and cv sets to ensure there is no overfitting.
+By default grid search uses a k value of 3 but we can pass the cv parameter with an appropriate int value for k performing the kfold cross validation.</p>
 
 </div>
 </div>
