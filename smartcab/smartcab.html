@@ -13436,7 +13436,7 @@ For the feature 'input.left' there are 4 options (None, forward, left, right)<br
 For the feature 'input.right' there are 4 options (None, forward, left, right)<br>
 For the feature 'deadline' , the total grid size is 8 X 6. This would mean the maximum L1 distance is 14 and the minimum L1 distance allowed when we choose a random start and destination is 4 so there are about 10 values that could be the distance between the start and destination points for the agent. The deadline is 5 times the distance as per the code where we are assigning 5 time steps per distance unit. So there could be 10 possible values for distance.<br>
 So the total possible states in the state space is 3x2x4x4x4x10 = 3840<br>
-Though this still a finite number, this is a lot for the agent to train. The deadline is already being used as a part of the act method in the environment file. Also we donot have to consider the input.right as when the light is green, the right of way would be for there for the agent and if in red and we want to turn right we dont have to consider the right traffic. But considering the right traffic would help in making the learner learn what options it should not take which we will not consider for now. So if we remove these two variables from the state we will have 3X2X4X4 = 96<br> This seems a reasonable state space to work with so the final feature set will be (waypoint, input.light, input.oncoming, incoming</p>
+Though this still a finite number, this is a lot for the agent to train. The deadline is already being used as a part of the act method in the environment file. Also we donot have to consider the input.right as when the light is green, the right of way would be for there for the agent and if in red and we want to turn right we dont have to consider the right traffic. But considering the right traffic would help in making the learner learn what options it should not take which we will not consider for now. So if we remove these two variables from the state we will have 3X2X4X4 = 96<br> This seems a reasonable state space to work with so the final feature set will be (waypoint, input.light, input.oncoming, input.left)</p>
 
 </div>
 </div>
@@ -13692,7 +13692,7 @@ $$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> <br></p>
 <ol>
-<li>The optimal policy will be something like a positve reward for anything with the below states. Any other states should receive a negative reward. The above table is based on the US right of way laws.<br></li>
+<li>The optimal policy  based on the US right of way laws for the different states in state space is shown below. The action in the below table represents the optimal action for that state and a value of &lt;any&gt; represents any of the valid action of ("None","forward","left","right").<br></li>
 </ol>
 <table>
 <thead><tr>
@@ -13700,6 +13700,8 @@ $$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1
 <th>light</th>
 <th>oncoming</th>
 <th>left</th>
+<th>action</th>
+<th style="text-align:left">Explanation</th>
 </tr>
 </thead>
 <tbody>
@@ -13708,50 +13710,133 @@ $$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1
 <td>green</td>
 <td>&lt;any&gt;</td>
 <td>&lt;any&gt;</td>
-</tr>
-<tr>
-<td>left</td>
-<td>green</td>
-<td>None/left</td>
-<td>&lt;any&gt;</td>
+<td>right</td>
+<td style="text-align:left">The light is green, waypoint is right and right of way is for the agent. So the oncoming and the left traffic can be ignored and agent can turn right.</td>
 </tr>
 <tr>
 <td>forward</td>
 <td>green</td>
 <td>&lt;any&gt;</td>
 <td>&lt;any&gt;</td>
+<td>forward</td>
+<td style="text-align:left">The light is green, waypoint is right and right of way is for the agent. So the oncoming and the left traffic can be ignored and agent can go forward.</td>
+</tr>
+<tr>
+<td>left</td>
+<td>green</td>
+<td>None</td>
+<td>&lt;any&gt;</td>
+<td>left</td>
+<td style="text-align:left">The light is green, waypoint is left and right of way is for the agent. But we need to ensure the oncoming traffic is not forward or right(left traffic can be ignored). Since the oncoming is 'None', the agent can turn left.</td>
+</tr>
+<tr>
+<td>left</td>
+<td>green</td>
+<td>left</td>
+<td>&lt;any&gt;</td>
+<td>left</td>
+<td style="text-align:left">The light is green, waypoint is left and right of way is for the agent. But we need to ensure the oncoming traffic is not forward or right(left traffic can be ignored). Since the oncoming is 'left', the agent can turn left.</td>
+</tr>
+<tr>
+<td>left</td>
+<td>green</td>
+<td>right</td>
+<td>&lt;any&gt;</td>
+<td>None</td>
+<td style="text-align:left">The light is green, waypoint is left and right of way is for the agent. But we need to ensure the oncoming traffic is not forward or right(left traffic can be ignored). Since the oncoming is 'right', the agent cannot turn left and needs to stay put.</td>
+</tr>
+<tr>
+<td>left</td>
+<td>green</td>
+<td>forward</td>
+<td>&lt;any&gt;</td>
+<td>None</td>
+<td style="text-align:left">The light is green, waypoint is left and right of way is for the agent. But we need to ensure the oncoming traffic is not forward or right(left traffic can be ignored). Since it is oncoming is 'None', the agent cannot turn left and needs to stay put.</td>
 </tr>
 <tr>
 <td>right</td>
 <td>red</td>
 <td>&lt;any&gt;</td>
-<td>None/right/left</td>
+<td>None</td>
+<td>right</td>
+<td style="text-align:left">The light is red and waypoint is right. As there is no left traffic coming forward(it is 'None'), the agent can turn right. We can ignore the oncoming traffic as they will also have a red light.</td>
+</tr>
+<tr>
+<td>right</td>
+<td>red</td>
+<td>&lt;any&gt;</td>
+<td>right</td>
+<td>right</td>
+<td style="text-align:left">The light is red and waypoint is right. As there is no left traffic coming forward(it is 'right'), the agent can turn right. We can ignore the oncoming traffic as they will also have a red light.</td>
+</tr>
+<tr>
+<td>right</td>
+<td>red</td>
+<td>&lt;any&gt;</td>
+<td>left</td>
+<td>right</td>
+<td style="text-align:left">The light is red and waypoint is right. As there is no left traffic coming forward(it is 'left'), the agent can turn right. We can ignore the oncoming traffic as they will also have a red light.</td>
+</tr>
+<tr>
+<td>right</td>
+<td>red</td>
+<td>&lt;any&gt;</td>
+<td>forward</td>
+<td>None</td>
+<td style="text-align:left">The light is red and waypoint is right. As there is left traffic coming forward, the agent cannot turn right and needs to stay put. We can ignore the oncoming traffic as they will also have a red light.</td>
+</tr>
+<tr>
+<td>forward</td>
+<td>red</td>
+<td>&lt;any&gt;</td>
+<td>&lt;any&gt;</td>
+<td>None</td>
+<td style="text-align:left">The light is red and waypoint is forward. The agent cannot go forward or left on a red light and needs to stay put. We can ignore the oncoming traffic and the left traffic as we will not be moving.</td>
+</tr>
+<tr>
+<td>left</td>
+<td>red</td>
+<td>&lt;any&gt;</td>
+<td>&lt;any&gt;</td>
+<td>None</td>
+<td style="text-align:left">The light is red and waypoint is left. The agent cannot go forward or left on a red light and needs to stay put. We can ignore the oncoming traffic and the left traffic as we will not be moving.</td>
 </tr>
 </tbody>
 </table>
 <ol>
 <li><p>In the 'sim_improved-learning.txt', we can see that the agent has learnt pretty well considering the policy for the states. The do closely align with the optimal policy as shown in the above table with one or two glitches here and there</p>
 </li>
-<li><p>Below are a few samples from the simulation. We can see that for all the below samples the  policy closely aligns with the optimal policy. 
- In this example below the light is green and waypoint is right and there is no forward traffic from the left so turning right should get the highest reward and thats what we see below.<br>
- ('right', 'green', 'right', 'right')
+<li><p>Below are a few samples from the simulation. We can see that for all the below samples the  policy closely aligns with the optimal policy.<br>In this example below the light is green and waypoint is right and there is no forward traffic from the left so turning right should get the highest reward and thats what we see below.<br></p>
+
+<pre><code> ('right', 'green', 'right', 'right')
   -- forward : 0.00
   -- left : -10.33
   -- right : 1.22
   -- None : -2.90
- Similarly in this example below the light is green and waypoint is forward and going forward should get the highest reward irrespective of the state for ongoing and left traffic and thats what we see below.<br>
- ('forward', 'green', 'forward', None)
+</code></pre>
+<p>Similarly in this example below the light is green and waypoint is forward and going forward should get the highest reward irrespective of the state for ongoing and left traffic and thats what we see below.<br></p>
+
+<pre><code> ('forward', 'green', 'forward', None)
   -- forward : 1.48
   -- left : 1.12
   -- right : 0.25
-  -- None : -4.88</p>
+  -- None : -4.88</code></pre>
 </li>
-<li><p>Below is one sample where I feel that the learner has not learnt the optimal policy yet. In htis example the waypoint is right and the light is green and the left traffic is turning right which means right should get the highest reward but forward has received the highest.<br>
- ('right', 'green', 'forward', 'right')
+<li><p>Below are a few sample where I feel that the learner has not learnt the optimal policy yet. In both the samples the right reward is still at a default of '0'.<br>In this example the waypoint is right and the light is green and the right of way for the agent which means right should get the highest reward but forward has received the highest.<br></p>
+
+<pre><code> ('right', 'green', 'forward', 'right')
   -- forward : 1.08
   -- left : -14.96
   -- right : 0.00
-  -- None : -3.77</p>
+  -- None : -3.77
+</code></pre>
+<p>Similarly, in this example the waypoint is right and the light is red and the left traffic is turning right which means the aget is gould to go and right should get the highest reward but forward has received the highest.<br></p>
+
+<pre><code> ('right', 'red', 'right', 'right')
+  -- forward : -5.25
+  -- left : -34.76
+  -- right : 0.00
+  -- None : 1.13</code></pre>
 </li>
 </ol>
 
